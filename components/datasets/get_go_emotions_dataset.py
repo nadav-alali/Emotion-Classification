@@ -21,13 +21,8 @@ def _get_file_name(file_number):
 class GoEmotionsDataset(GetData):
 
     def __init__(self):
-        self.dataset = None
-
-    def get_data(self) -> list:
-        if self.dataset:
-            return self.dataset
+        super().__init__()
         self.load_data()
-        return self.dataset
 
     def is_data_exists(self) -> bool:
         for i in range(len(URLS)):
@@ -36,7 +31,9 @@ class GoEmotionsDataset(GetData):
         return True
 
     def load_data(self):
-        path = get_data_folder_path()
-        for i, url in enumerate(URLS):
-            output_file_path = os.path.join(path, _get_file_name(i))
-            wget.download(url, output_file_path)
+        if not self.is_data_exists():
+            path = get_data_folder_path()
+            for i, url in enumerate(URLS):
+                output_file_path = os.path.join(path, _get_file_name(i))
+                wget.download(url, output_file_path)
+
