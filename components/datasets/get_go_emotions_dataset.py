@@ -42,7 +42,3 @@ class GoEmotionsDataset(GetData):
         for i, url in enumerate(URLS):
             output_file_path = os.path.join(path, _get_file_name(i))
             wget.download(url, output_file_path)
-
-
-m = GoEmotionsDataset()
-m.get_data()
