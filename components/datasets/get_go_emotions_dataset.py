@@ -5,6 +5,8 @@ import os
 import pandas as pd
 
 from components.datasets.utils import get_data_folder_path
+from components.text_handler.embedding.embedding import Embedding
+from components.text_handler.utils import clean_sentence
 
 FIRST_URL = "https://storage.googleapis.com/gresearch/goemotions/data/full_dataset/goemotions_1.csv"
 SECOND_URL = "https://storage.googleapis.com/gresearch/goemotions/data/full_dataset/goemotions_2.csv"
@@ -21,6 +23,8 @@ LABELS = ['admiration', 'amusement', 'anger', 'annoyance', 'approval', 'caring',
           'joy', 'love', 'nervousness', 'optimism', 'pride', 'realization',
           'relief', 'remorse', 'sadness', 'surprise', 'neutral']
 
+STOP_WORDS = ["[NAME]"]  # when a name appears in a reddit post Google replaced it with this string
+
 
 def _get_file_name(file_number):
     return f"{OUTPUT_FILE_NAME}_{file_number}.{OUTPUT_FILE_TYPE}"
@@ -28,8 +32,8 @@ def _get_file_name(file_number):
 
 class GoEmotionsDataset(GetData):
 
-    def __init__(self):
-        super().__init__(Dataset.GO_EMOTIONS)
+    def __init__(self, embedding: Embedding):
+        super().__init__(Dataset.GO_EMOTIONS, embedding)
         self.load_data()
 
     def is_data_exists(self) -> bool:
@@ -52,9 +56,10 @@ class GoEmotionsDataset(GetData):
 
         for output_path in output_paths:
             data = pd.read_csv(output_path)
-            phrases = list(data["text"]) # todo - need to clean phrases and convert them to vector using word2vec or other algorithm
+            phrases = [clean_sentence(sentence, STOP_WORDS) for sentence in list(data["text"])]
+            embedded_phrases = [self.embedding.embed(phrase) for phrase in phrases]
             labels = list(data.loc[:, LABELS[0]:].to_numpy())
-            self.data.extend(phrases)
+            self.data.extend(embedded_phrases)
             self.labels.extend(labels)
         self.save_data()
 
@@ -65,3 +70,7 @@ class GoEmotionsDataset(GetData):
                 string_label += f'{LABELS[i]}, '
         return string_label[: -2]
 
+# example:
+# from components.text_handler.embedding.glove_embedding import GloveEmbedding
+# glove_embedding = GloveEmbedding()
+# ds = GoEmotionsDataset(glove_embedding)

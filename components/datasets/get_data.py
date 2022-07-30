@@ -4,12 +4,14 @@ from components.datasets.dataset_enum import Dataset
 import pickle
 
 from components.datasets.utils import get_data_file_path, get_data_file
+from components.text_handler.embedding.embedding import Embedding
 
 
 class GetData:
 
-    def __init__(self, data_type: Dataset):
+    def __init__(self, data_type: Dataset, embedding: Embedding):
         self.data_type = data_type
+        self.embedding = embedding
         self.data = []
         self.labels = []
         self.restore_data()
@@ -43,4 +45,3 @@ class GetData:
         phrase = self.data[index]
         label = self.labels[index]
         return phrase, label
-
