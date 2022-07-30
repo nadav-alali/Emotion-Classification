@@ -58,5 +58,10 @@ class GoEmotionsDataset(GetData):
             self.labels.extend(labels)
         self.save_data()
 
+    def get_text_label_from_label_vector(self, label_vector: list) -> str:
+        string_label = ''
+        for i, label in enumerate(label_vector):
+            if label:
+                string_label += f'{LABELS[i]}, '
+        return string_label[: -2]
 
-x = GoEmotionsDataset()

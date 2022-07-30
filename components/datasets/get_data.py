@@ -33,6 +33,9 @@ class GetData:
         pickle.dump({"data": self.data, "labels": self.labels}, data_file)
         data_file.close()
 
+    def get_text_label_from_label_vector(self, label_vector: list) -> str:
+        pass
+
     def __len__(self):
         len(self.data)
 
