@@ -18,6 +18,6 @@ def clean_sentence(text: str, special_stop_words: list):
     # remove remaining tokens that are not alphabetic
     words = [word for word in stripped if word.isalpha()]
     # filter out stop words and also use Porter algorithm to get the stem of a word
-    stop_words = set(stopwords.words('english'))
-    words = [w for w in words if not w in stop_words]
+    # stop_words = set(stopwords.words('english'))
+    # words = [w for w in words if not w in stop_words]
     return words

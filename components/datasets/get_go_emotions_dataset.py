@@ -69,8 +69,3 @@ class GoEmotionsDataset(GetData):
             if label:
                 string_label += f'{LABELS[i]}, '
         return string_label[: -2]
-
-# example:
-# from components.text_handler.embedding.glove_embedding import GloveEmbedding
-# glove_embedding = GloveEmbedding()
-# ds = GoEmotionsDataset(glove_embedding)
