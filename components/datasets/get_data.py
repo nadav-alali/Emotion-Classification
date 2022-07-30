@@ -8,6 +8,3 @@ class GetData:
 
     def load_data(self) -> list:
         pass
-
-    def save_data(self, dataset):
-        pass

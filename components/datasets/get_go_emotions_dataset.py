@@ -1,5 +1,6 @@
 from components.datasets.get_data import GetData
 import wget
+import os
 
 from components.datasets.utils import get_data_folder_path
 
@@ -8,6 +9,13 @@ SECOND_URL = "https://storage.googleapis.com/gresearch/goemotions/data/full_data
 THIRD_URL = "https://storage.googleapis.com/gresearch/goemotions/data/full_dataset/goemotions_3.csv"
 
 URLS = [FIRST_URL, SECOND_URL, THIRD_URL]
+
+OUTPUT_FILE_NAME = "go_emotions"
+OUTPUT_FILE_TYPE = "csv"
+
+
+def _get_file_name(file_number):
+    return f"{OUTPUT_FILE_NAME}_{file_number}.{OUTPUT_FILE_TYPE}"
 
 
 class GoEmotionsDataset(GetData):
@@ -18,19 +26,23 @@ class GoEmotionsDataset(GetData):
     def get_data(self) -> list:
         if self.is_data_exists():
             return self.load_data()
-        dataset = []  # todo - import data
-        self.save_data(dataset)
-        return dataset
+        self.load_data()
+        return self.dataset
 
     def is_data_exists(self) -> bool:
-        pass
+        for i in range(len(URLS)):
+            if not os.path.exists(_get_file_name(i)):
+                return False
+        return True
 
     def load_data(self) -> list:
         if self.dataset:
             return self.dataset
         path = get_data_folder_path()
-        for url in URLS:
-            wget.download(url, path)
+        for i, url in enumerate(URLS):
+            output_file_path = os.path.join(path, _get_file_name(i))
+            wget.download(url, output_file_path)
 
-    def save_data(self, dataset):
-        pass
+
+m = GoEmotionsDataset()
+m.get_data()
