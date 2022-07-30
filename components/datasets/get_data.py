@@ -6,5 +6,5 @@ class GetData:
     def is_data_exists(self) -> bool:
         pass
 
-    def load_data(self) -> list:
+    def load_data(self):
         pass

@@ -24,8 +24,8 @@ class GoEmotionsDataset(GetData):
         self.dataset = None
 
     def get_data(self) -> list:
-        if self.is_data_exists():
-            return self.load_data()
+        if self.dataset:
+            return self.dataset
         self.load_data()
         return self.dataset
 
@@ -35,9 +35,7 @@ class GoEmotionsDataset(GetData):
                 return False
         return True
 
-    def load_data(self) -> list:
-        if self.dataset:
-            return self.dataset
+    def load_data(self):
         path = get_data_folder_path()
         for i, url in enumerate(URLS):
             output_file_path = os.path.join(path, _get_file_name(i))
