@@ -1,15 +1,37 @@
+import os.path
+
+from components.datasets.dataset_enum import Dataset
+import pickle
+
+from components.datasets.utils import get_data_file_path, get_data_file
+
 
 class GetData:
 
-    def __init__(self):
+    def __init__(self, data_type: Dataset):
+        self.data_type = data_type
         self.data = []
         self.labels = []
+        self.restore_data()
 
     def is_data_exists(self) -> bool:
         pass
 
     def load_data(self):
         pass
+
+    def restore_data(self):
+        if os.path.exists(get_data_file_path(self.data_type)):
+            data_file = get_data_file(self.data_type, False)
+            restored_data = pickle.load(data_file)
+            self.data = restored_data["data"]
+            self.labels = restored_data["labels"]
+            data_file.close()
+
+    def save_data(self):
+        data_file = get_data_file(self.data_type, True)
+        pickle.dump({"data": self.data, "labels": self.labels}, data_file)
+        data_file.close()
 
     def __len__(self):
         len(self.data)

@@ -1,3 +1,4 @@
+from components.datasets.dataset_enum import Dataset
 from components.datasets.get_data import GetData
 import wget
 import os
@@ -21,19 +22,25 @@ def _get_file_name(file_number):
 class GoEmotionsDataset(GetData):
 
     def __init__(self):
-        super().__init__()
+        super().__init__(Dataset.GO_EMOTIONS)
         self.load_data()
 
     def is_data_exists(self) -> bool:
+        folder_path = get_data_folder_path()
         for i in range(len(URLS)):
-            if not os.path.exists(_get_file_name(i)):
+            path = os.path.join(folder_path, _get_file_name(i))
+            if not os.path.exists(path):
                 return False
         return True
 
     def load_data(self):
+        if len(self.data) > 0:
+            return
+
         if not self.is_data_exists():
             path = get_data_folder_path()
             for i, url in enumerate(URLS):
                 output_file_path = os.path.join(path, _get_file_name(i))
                 wget.download(url, output_file_path)
+        self.save_data()
 
