@@ -2,6 +2,7 @@ from components.datasets.dataset_enum import Dataset
 from components.datasets.get_data import GetData
 import wget
 import os
+import pandas as pd
 
 from components.datasets.utils import get_data_folder_path
 
@@ -13,6 +14,12 @@ URLS = [FIRST_URL, SECOND_URL, THIRD_URL]
 
 OUTPUT_FILE_NAME = "go_emotions"
 OUTPUT_FILE_TYPE = "csv"
+
+LABELS = ['admiration', 'amusement', 'anger', 'annoyance', 'approval', 'caring',
+          'confusion', 'curiosity', 'desire', 'disappointment', 'disapproval',
+          'disgust', 'embarrassment', 'excitement', 'fear', 'gratitude', 'grief',
+          'joy', 'love', 'nervousness', 'optimism', 'pride', 'realization',
+          'relief', 'remorse', 'sadness', 'surprise', 'neutral']
 
 
 def _get_file_name(file_number):
@@ -37,10 +44,19 @@ class GoEmotionsDataset(GetData):
         if len(self.data) > 0:
             return
 
+        folder_path = get_data_folder_path()
+        output_paths = [os.path.join(folder_path, _get_file_name(i)) for i in range(len(URLS))]
         if not self.is_data_exists():
-            path = get_data_folder_path()
             for i, url in enumerate(URLS):
-                output_file_path = os.path.join(path, _get_file_name(i))
-                wget.download(url, output_file_path)
+                wget.download(url, output_paths[i])
+
+        for output_path in output_paths:
+            data = pd.read_csv(output_path)
+            phrases = list(data["text"]) # todo - need to clean phrases and convert them to vector using word2vec or other algorithm
+            labels = list(data.loc[:, LABELS[0]:].to_numpy())
+            self.data.extend(phrases)
+            self.labels.extend(labels)
         self.save_data()
 
+
+x = GoEmotionsDataset()
