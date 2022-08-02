@@ -57,8 +57,11 @@ class GoEmotionsDataset(GetData):
         for output_path in output_paths:
             data = pd.read_csv(output_path)
             phrases = [clean_sentence(sentence, STOP_WORDS) for sentence in list(data["text"])]
+            valid_indexes = [i for i, _ in enumerate(phrases) if len(phrases[i]) > 0]
+            phrases = [phrases[i] for i in valid_indexes]
             embedded_phrases = [self.embedding.embed(phrase) for phrase in phrases]
             labels = list(data.loc[:, LABELS[0]:].to_numpy())
+            labels = [labels[i] for i in valid_indexes]
             self.data.extend(embedded_phrases)
             self.labels.extend(labels)
         self.save_data()

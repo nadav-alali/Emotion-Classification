@@ -39,7 +39,7 @@ class GetData:
         pass
 
     def __len__(self):
-        len(self.data)
+        return len(self.data)
 
     def __getitem__(self, index):
         phrase = self.data[index]
