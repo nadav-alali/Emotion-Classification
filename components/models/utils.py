@@ -1,5 +1,4 @@
 import random
-
 from components.datasets.get_data import GetData
 
 

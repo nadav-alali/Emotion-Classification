@@ -10,7 +10,7 @@ class GRU(nn.Module):
         self.in2hidden_reset = nn.Linear(input_size + hidden_size, hidden_size)
         self.hidden_layer = nn.Linear(input_size + hidden_size, hidden_size)
         self.activation = torch.tanh
-        self.sigmoid = nn.functional.sigmoid
+        self.sigmoid = torch.sigmoid
         self.out = nn.Linear(hidden_size, output_size)
 
     def forward(self, x, hidden_state_):
