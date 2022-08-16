@@ -1,3 +1,4 @@
+import numpy as np
 from components.datasets.dataset_enum import Dataset
 from components.datasets.get_data import GetData
 import wget
@@ -5,6 +6,7 @@ import os
 import pandas as pd
 
 from components.datasets.utils import get_data_folder_path
+from components.models.utils import balance_data
 from components.text_handler.embedding.embedding import Embedding
 from components.text_handler.utils import clean_sentence
 
@@ -32,8 +34,8 @@ def _get_file_name(file_number):
 
 class GoEmotionsDataset(GetData):
 
-    def __init__(self, embedding: Embedding):
-        super().__init__(Dataset.GO_EMOTIONS, embedding)
+    def __init__(self, embedding: Embedding, sampler):
+        super().__init__(Dataset.GO_EMOTIONS, embedding, sampler)
         self.load_data()
 
     def is_data_exists(self) -> bool:
@@ -56,14 +58,16 @@ class GoEmotionsDataset(GetData):
 
         for output_path in output_paths:
             data = pd.read_csv(output_path)
+            data = data[data["example_very_unclear"] == False]  # only take labeled data
             phrases = [clean_sentence(sentence, STOP_WORDS) for sentence in list(data["text"])]
-            valid_indexes = [i for i, _ in enumerate(phrases) if len(phrases[i]) > 0]
+            labels = list(data.loc[:, LABELS[0]:].to_numpy())
+            valid_indexes = [i for i, _ in enumerate(phrases) if len(phrases[i]) > 0 and np.sum(labels[i]) == 1]
             phrases = [phrases[i] for i in valid_indexes]
             embedded_phrases = [self.embedding.embed(phrase) for phrase in phrases]
-            labels = list(data.loc[:, LABELS[0]:].to_numpy())
             labels = [labels[i] for i in valid_indexes]
             self.data.extend(embedded_phrases)
             self.labels.extend(labels)
+        self.data, self.labels = balance_data(self.data, self.labels)
         self.save_data()
 
     def get_text_label_from_label_vector(self, label_vector: list) -> str:

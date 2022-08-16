@@ -1,5 +1,7 @@
 import os.path
 
+import numpy as np
+
 from components.datasets.dataset_enum import Dataset
 import pickle
 
@@ -9,11 +11,12 @@ from components.text_handler.embedding.embedding import Embedding
 
 class GetData:
 
-    def __init__(self, data_type: Dataset, embedding: Embedding):
+    def __init__(self, data_type: Dataset, embedding: Embedding, sampler):
         self.data_type = data_type
         self.embedding = embedding
         self.data = []
         self.labels = []
+        self.sampler = sampler
         self.restore_data()
 
     def is_data_exists(self) -> bool:
@@ -21,6 +24,9 @@ class GetData:
 
     def load_data(self):
         pass
+
+    def get_weights(self):
+        return np.sum(np.array(self.labels), axis=0)
 
     def restore_data(self):
         if os.path.exists(get_data_file_path(self.data_type)):

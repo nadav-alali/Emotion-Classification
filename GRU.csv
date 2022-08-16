@@ -1,0 +1,5 @@
+,train,test
+loss,0.0746,0.0761
+recall,0.4413,0.4432
+F1 score,0.5631,0.5619
+precision,0.7949,0.7834

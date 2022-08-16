@@ -11,7 +11,7 @@ class GloveEmbedding(Embedding):
     def __init__(self):
         self.model = GloVe(name='6B', dim=EMBEDDING_SIZE)
 
-    def embed(self, sentence) -> list:
+    def embed(self, sentence):
         embedded = self.model.get_vecs_by_tokens(sentence)
         if embedded.shape[0] != EMBEDDING_SIZE or embedded.shape[1] != EMBEDDING_SIZE:
             embedded = torch.nn.functional.pad(embedded, (0, 0, 0, MAX_LENGTH - embedded.shape[0]))
