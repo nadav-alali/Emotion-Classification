@@ -25,9 +25,9 @@ def feed_model(model, dataset, criterion, optimizer, recall, f1, precision, meas
     }
     amount = 0.0
     # train the model
-    for phrases, labels in dataset:
+    for phrases, embedded_phrases, labels in dataset:
         amount += 1
-        output, hidden_state = model(phrases)
+        output, hidden_state = model(embedded_phrases)
         loss = criterion(output, labels)
 
         # measure
@@ -39,6 +39,8 @@ def feed_model(model, dataset, criterion, optimizer, recall, f1, precision, meas
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+            for param in model.parameters():
+                param.grad.data.clamp_(-1, 1)
 
     for measurement in measurements.keys():
         measurements[measurement][mode].append(curr_measurement_sum[measurement] / amount)
