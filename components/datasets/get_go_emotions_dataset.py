@@ -27,8 +27,6 @@ LABELS = ['admiration', 'amusement', 'anger', 'annoyance', 'approval', 'caring',
 
 LABELS_TO_REMOVE = ["grief", "nervousness", "relief", "pride"]
 
-STOP_WORDS = ["[NAME]"]  # when a name appears in a reddit post Google replaced it with this string
-
 NUM_OF_NEUTRAL_LABELS = 22520
 
 def _get_file_name(file_number):
@@ -66,7 +64,7 @@ class GoEmotionsDataset(GetData):
             for l in LABELS_TO_REMOVE:
                 data = data[data[l] == 0]
             data = data.drop(columns=LABELS_TO_REMOVE)
-            phrases = [clean_sentence(sentence, STOP_WORDS) for sentence in list(data["text"])]
+            phrases = [clean_sentence(sentence) for sentence in list(data["text"])]
             labels = list(data.loc[:, LABELS[0]:].to_numpy())
             valid_indexes = [i for i, _ in enumerate(phrases) if len(phrases[i]) > 0 and np.sum(labels[i]) == 1]
             phrases = [phrases[i] for i in valid_indexes]
@@ -85,7 +83,7 @@ class GoEmotionsDataset(GetData):
                 under_sampled_phrases.append(self.phrases[i])
                 under_sampled_data.append(self.data[i])
                 under_sampled_labels.append(self.labels[i])
-        self.phrases, self.data, self.labels = balance_data(self.phrases, under_sampled_data, under_sampled_labels)
+        self.phrases, self.data, self.labels = balance_data(under_sampled_phrases, under_sampled_data, under_sampled_labels)
         self.save_data()
 
     def get_text_label_from_label_vector(self, label_vector: list) -> str:
